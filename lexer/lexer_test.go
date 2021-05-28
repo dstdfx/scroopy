@@ -66,6 +66,7 @@ func TestLexer_NextToken(t *testing.T) {
 			expectedType:    token.EOF,
 			expectedLiteral: "",
 		},
+		//nolint
 		// TODO: will be supported later
 		//{
 		//	expectedType:    token.FUNC,
