@@ -22,6 +22,8 @@ func New(src string) *Lexer {
 // If there's no more tokens left - token with token.EOF type is returned.
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+	l.skipWhitespace()
+
 	switch l.char {
 	case '=':
 		tok = newToken(token.ASSIGN, l.char)
@@ -48,7 +50,20 @@ func (l *Lexer) NextToken() token.Token {
 	case 0:
 		tok.Type = token.EOF
 	default:
-		tok.Type = token.ILLEGAL
+		switch {
+		case isLetter(l.char):
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+
+			return tok
+		case isDigit(l.char):
+			tok.Type = token.INT
+			tok.Literal = l.readNumber()
+
+			return tok
+		default:
+			tok.Type = token.ILLEGAL
+		}
 	}
 	l.readChar()
 
@@ -70,4 +85,38 @@ func (l *Lexer) readChar() {
 	}
 	l.currentPos = l.nextReadPos
 	l.nextReadPos++
+}
+
+func (l *Lexer) readIdentifier() string {
+	identifierStartsAt := l.currentPos
+	l.readChar() // doing so we don't need to check current char twice
+	for isLetter(l.char) {
+		l.readChar()
+	}
+
+	return l.input[identifierStartsAt:l.currentPos]
+}
+
+func (l *Lexer) readNumber() string {
+	identifierStartsAt := l.currentPos
+	l.readChar() // doing so we don't need to check current char twice
+	for isDigit(l.char) {
+		l.readChar()
+	}
+
+	return l.input[identifierStartsAt:l.currentPos]
+}
+
+func (l *Lexer) skipWhitespace() {
+	for l.char == ' ' || l.char == '\t' || l.char == '\n' || l.char == '\r' {
+		l.readChar()
+	}
+}
+
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
 }
