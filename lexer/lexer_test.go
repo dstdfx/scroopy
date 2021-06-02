@@ -17,7 +17,7 @@ let result = add(five, ten);
 
 if (5 < result) {
        return true;
-   } else {
+} else {
        return false;
 }
 `
@@ -104,7 +104,7 @@ if (5 < result) {
 }
 
 func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
-	input := `=+-*/(),;{}@!<>`
+	input := `=+-*/(),;{}@!<>==!=`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -169,6 +169,14 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 		{
 			expectedType:    token.GT,
 			expectedLiteral: ">",
+		},
+		{
+			expectedType:    token.EQ,
+			expectedLiteral: "==",
+		},
+		{
+			expectedType:    token.NOTEQUAL,
+			expectedLiteral: "!=",
 		},
 		{
 			expectedType:    token.EOF,
