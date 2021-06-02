@@ -28,8 +28,13 @@ const (
 	RBRACE    = "}"
 
 	// Keywords.
-	FUNC = "FUNC"
-	LET  = "LET"
+	FUNC   = "FUNC"
+	LET    = "LET"
+	TRUE   = "TRUE"
+	FALSE  = "FALSE"
+	IF     = "IF"
+	ELSE   = "ELSE"
+	RETURN = "RETURN"
 )
 
 // Type represents token's type.
@@ -42,8 +47,13 @@ type Token struct {
 }
 
 var keywordsLookup = map[string]Type{
-	"fn":  FUNC,
-	"let": LET,
+	"fn":     FUNC,
+	"let":    LET,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
 }
 
 // LookupIdent returns a type of identifier.

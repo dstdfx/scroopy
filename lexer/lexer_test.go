@@ -13,7 +13,14 @@ let ten = 10;
 let add = fn(x, y) {
 	x + y;
 };
-let result = add(five, ten); `
+let result = add(five, ten);
+
+if (5 < result) {
+       return true;
+   } else {
+       return false;
+}
+`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -55,6 +62,23 @@ let result = add(five, ten); `
 		{expectedType: token.IDENT, expectedLiteral: "ten"},
 		{expectedType: token.RPAREN, expectedLiteral: ")"},
 		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
+		{expectedType: token.IF, expectedLiteral: "if"},
+		{expectedType: token.LPAREN, expectedLiteral: "("},
+		{expectedType: token.INT, expectedLiteral: "5"},
+		{expectedType: token.LT, expectedLiteral: "<"},
+		{expectedType: token.IDENT, expectedLiteral: "result"},
+		{expectedType: token.RPAREN, expectedLiteral: ")"},
+		{expectedType: token.LBRACE, expectedLiteral: "{"},
+		{expectedType: token.RETURN, expectedLiteral: "return"},
+		{expectedType: token.TRUE, expectedLiteral: "true"},
+		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
+		{expectedType: token.RBRACE, expectedLiteral: "}"},
+		{expectedType: token.ELSE, expectedLiteral: "else"},
+		{expectedType: token.LBRACE, expectedLiteral: "{"},
+		{expectedType: token.RETURN, expectedLiteral: "return"},
+		{expectedType: token.FALSE, expectedLiteral: "false"},
+		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
+		{expectedType: token.RBRACE, expectedLiteral: "}"},
 		{expectedType: token.EOF},
 	}
 
