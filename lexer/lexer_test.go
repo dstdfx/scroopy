@@ -80,7 +80,7 @@ let result = add(five, ten); `
 }
 
 func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
-	input := `=+-*/(),;{}@`
+	input := `=+-*/(),;{}@!<>`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -99,11 +99,11 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 			expectedLiteral: "-",
 		},
 		{
-			expectedType:    token.MULTIPLY,
+			expectedType:    token.ASTERISK,
 			expectedLiteral: "*",
 		},
 		{
-			expectedType:    token.DIVIDE,
+			expectedType:    token.SLASH,
 			expectedLiteral: "/",
 		},
 		{
@@ -133,6 +133,18 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 		{
 			expectedType:    token.ILLEGAL,
 			expectedLiteral: "",
+		},
+		{
+			expectedType:    token.BANG,
+			expectedLiteral: "!",
+		},
+		{
+			expectedType:    token.LT,
+			expectedLiteral: "<",
+		},
+		{
+			expectedType:    token.GT,
+			expectedLiteral: ">",
 		},
 		{
 			expectedType:    token.EOF,

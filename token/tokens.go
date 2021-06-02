@@ -13,8 +13,11 @@ const (
 	ASSIGN   = "="
 	PLUS     = "+"
 	MINUS    = "-"
-	MULTIPLY = "*"
-	DIVIDE   = "/"
+	ASTERISK = "*"
+	BANG     = "!"
+	SLASH    = "/"
+	LT       = "<"
+	GT       = ">"
 
 	// Delimiters.
 	COMMA     = ","
