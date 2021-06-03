@@ -8,8 +8,6 @@ import (
 	"github.com/dstdfx/scroopy/repl"
 )
 
-// TODO: move to cmd package
-
 func main() {
 	currentUser, err := user.Current()
 	if err != nil {
