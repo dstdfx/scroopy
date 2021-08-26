@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/dstdfx/scroopy/ast"
 	"github.com/dstdfx/scroopy/lexer"
 	"github.com/dstdfx/scroopy/token"
@@ -12,11 +14,12 @@ type Parser struct {
 
 	currentToken token.Token
 	peekToken    token.Token
+	errors       []string
 }
 
 // New returns new instance of Parser.
 func New(l *lexer.Lexer) *Parser {
-	p := &Parser{l: l}
+	p := &Parser{l: l, errors: make([]string, 0)}
 
 	return p
 }
@@ -26,7 +29,75 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 }
 
+// Errors method returns a slice of encountered errors.
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) peekError(t token.Type) {
+	msg := fmt.Sprintf("expected next token to be '%s', got '%s' instead", t, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
+}
+
+// ParseProgram method parses the program and builds AST.
 func (p *Parser) ParseProgram() *ast.Root {
-	// TODO: implement me
-	return nil
+	root := &ast.Root{}
+	root.Statements = make([]ast.Statement, 0)
+
+	for p.currentToken.Type != token.EOF {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			root.Statements = append(root.Statements, stmt)
+		}
+		p.nextToken()
+	}
+
+	return root
+}
+
+func (p *Parser) parseStatement() ast.Statement {
+	switch p.currentToken.Type {
+	case token.LET:
+		return p.parseLetStatement()
+	default:
+		return nil
+	}
+}
+
+func (p *Parser) parseLetStatement() *ast.LetStatement {
+	stmt := &ast.LetStatement{
+		Token: p.currentToken,
+	}
+
+	if !p.expectPeek(token.IDENT) {
+		return nil
+	}
+
+	stmt.Name = &ast.Identifier{
+		Token: p.currentToken,
+		Value: p.currentToken.Literal,
+	}
+
+	if !p.expectPeek(token.ASSIGN) {
+		return nil
+	}
+
+	// TODO: add proper expression parsing
+	for p.currentToken.Type != token.SEMICOLON {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) expectPeek(t token.Type) bool {
+	if p.peekToken.Type == t {
+		p.nextToken()
+
+		return true
+	}
+
+	p.peekError(t)
+
+	return false
 }
