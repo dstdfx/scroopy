@@ -8,6 +8,8 @@ import (
 	"github.com/dstdfx/scroopy/token"
 )
 
+var ErrExpectedNextTokenFmt = "expected next token to be '%s', got '%s' instead"
+
 // Parser represents an entity that produces AST.
 type Parser struct {
 	l *lexer.Lexer
@@ -35,8 +37,7 @@ func (p *Parser) Errors() []string {
 }
 
 func (p *Parser) peekError(t token.Type) {
-	msg := fmt.Sprintf("expected next token to be '%s', got '%s' instead", t, p.peekToken.Type)
-	p.errors = append(p.errors, msg)
+	p.errors = append(p.errors, fmt.Sprintf(ErrExpectedNextTokenFmt, t, p.peekToken.Type))
 }
 
 // ParseProgram method parses the program and builds AST.

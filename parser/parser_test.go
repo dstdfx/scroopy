@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dstdfx/scroopy/lexer"
+	"github.com/dstdfx/scroopy/token"
 
 	"github.com/dstdfx/scroopy/ast"
 )
@@ -77,4 +79,21 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	}
 
 	return true
+}
+
+func TestLetStatements_ParsingError(t *testing.T) {
+	input := `let 10;`
+	l := lexer.New(input)
+	p := New(l)
+	_ = p.ParseProgram()
+
+	errors := p.Errors()
+	if len(errors) != 1 {
+		t.Errorf("expected 1 error but got %d", len(errors))
+	}
+
+	expectedError := fmt.Sprintf(ErrExpectedNextTokenFmt, token.IDENT, token.INT)
+	if errors[0] != expectedError {
+		t.Errorf("expected error '%s' but got '%s'", expectedError, errors[0])
+	}
 }
