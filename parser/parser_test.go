@@ -1,10 +1,11 @@
-package parser
+package parser_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/dstdfx/scroopy/lexer"
+	"github.com/dstdfx/scroopy/parser"
 	"github.com/dstdfx/scroopy/token"
 
 	"github.com/dstdfx/scroopy/ast"
@@ -18,7 +19,7 @@ let x = 5;
 let y = 10;
 let foobar = 838383;`
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
 
@@ -43,7 +44,7 @@ let foobar = 838383;`
 	}
 }
 
-func checkParserErrors(t *testing.T, p *Parser) {
+func checkParserErrors(t *testing.T, p *parser.Parser) {
 	errors := p.Errors()
 	if len(errors) == 0 {
 		return
@@ -84,7 +85,7 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 func TestLetStatements_ParsingError(t *testing.T) {
 	input := `let 10;`
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 	_ = p.ParseProgram()
 
 	errors := p.Errors()
@@ -92,8 +93,33 @@ func TestLetStatements_ParsingError(t *testing.T) {
 		t.Errorf("expected 1 error but got %d", len(errors))
 	}
 
-	expectedError := fmt.Sprintf(ErrExpectedNextTokenFmt, token.IDENT, token.INT)
+	expectedError := fmt.Sprintf(parser.ErrExpectedNextTokenFmt, token.IDENT, token.INT)
 	if errors[0] != expectedError {
 		t.Errorf("expected error '%s' but got '%s'", expectedError, errors[0])
+	}
+}
+
+func TestReturnStatements(t *testing.T) {
+	input := `
+return 5;
+return 10;
+return 993322; `
+	l := lexer.New(input)
+	p := parser.New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+	if len(program.Statements) != 3 {
+		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
+	}
+	for _, stmt := range program.Statements {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.returnStatement. got=%T", stmt)
+
+			continue
+		}
+		if returnStmt.TokenLiteral() != "return" {
+			t.Errorf("returnStmt.TokenLiteral not 'return', got %q", returnStmt.TokenLiteral())
+		}
 	}
 }
