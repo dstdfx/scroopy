@@ -11,8 +11,6 @@ import (
 	"github.com/dstdfx/scroopy/ast"
 )
 
-// TODO: add testcase with parsing errors
-
 func TestLetStatements(t *testing.T) {
 	input := `
 let x = 5;
