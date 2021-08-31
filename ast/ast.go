@@ -1,11 +1,15 @@
 package ast
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/dstdfx/scroopy/token"
 )
 
 // Node describes a minimal entity of AST.
 type Node interface {
+	fmt.Stringer
 	TokenLiteral() string
 }
 
@@ -26,6 +30,16 @@ type Root struct {
 	Statements []Statement
 }
 
+func (r *Root) String() string {
+	strBuilder := strings.Builder{}
+
+	for _, stmt := range r.Statements {
+		strBuilder.WriteString(stmt.String())
+	}
+
+	return strBuilder.String()
+}
+
 func (r *Root) TokenLiteral() string {
 	if len(r.Statements) > 0 {
 		return r.Statements[0].TokenLiteral()
@@ -38,6 +52,10 @@ func (r *Root) TokenLiteral() string {
 type Identifier struct {
 	Token token.Token // token.IDENT
 	Value string
+}
+
+func (i *Identifier) String() string {
+	return i.Value
 }
 
 func (i *Identifier) TokenLiteral() string {
@@ -53,6 +71,21 @@ type LetStatement struct {
 	Value Expression
 }
 
+func (l *LetStatement) String() string {
+	strBuilder := strings.Builder{}
+
+	strBuilder.WriteString(l.TokenLiteral() + " ")
+	strBuilder.WriteString(l.Name.String() + " = ")
+
+	if l.Value != nil {
+		strBuilder.WriteString(l.Value.String())
+	}
+
+	strBuilder.WriteByte(';')
+
+	return strBuilder.String()
+}
+
 func (l *LetStatement) TokenLiteral() string {
 	return l.Token.Literal
 }
@@ -65,8 +98,39 @@ type ReturnStatement struct {
 	Value Expression
 }
 
+func (r *ReturnStatement) String() string {
+	strBuilder := strings.Builder{}
+	strBuilder.WriteString(r.TokenLiteral() + " ")
+	if r.Value != nil {
+		strBuilder.WriteString(r.Value.String())
+	}
+	strBuilder.WriteByte(';')
+
+	return strBuilder.String()
+}
+
 func (r *ReturnStatement) TokenLiteral() string {
 	return r.Token.Literal
 }
 
 func (r *ReturnStatement) statementNode() {}
+
+// ExpressionStatement represents expression statement.
+type ExpressionStatement struct {
+	Token token.Token
+	Value Expression
+}
+
+func (e *ExpressionStatement) String() string {
+	if e.Value != nil {
+		return e.Value.String()
+	}
+
+	return ""
+}
+
+func (e *ExpressionStatement) statementNode() {}
+
+func (e *ExpressionStatement) TokenLiteral() string {
+	return e.Token.Literal
+}
