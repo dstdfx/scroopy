@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/dstdfx/scroopy/ast"
 	"github.com/dstdfx/scroopy/lexer"
@@ -43,6 +44,11 @@ func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: make([]string, 0)}
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+
+	// In order to initialize `current` and `peek` token states
+	p.nextToken()
+	p.nextToken()
 
 	return p
 }
@@ -50,8 +56,6 @@ func New(l *lexer.Lexer) *Parser {
 func (p *Parser) nextToken() {
 	p.currentToken = p.peekToken
 	p.peekToken = p.l.NextToken()
-	fmt.Println("current token: ", p.currentToken)
-	fmt.Println("peek token: ", p.peekToken)
 }
 
 // Errors method returns a slice of encountered errors.
@@ -85,10 +89,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
-	case token.IDENT:
-		return p.parseExpressionStatement()
+	// case token.IDENT, token.INT:
+	// 	return p.parseExpressionStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
@@ -168,6 +172,21 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{Token: p.currentToken}
+
+	var err error
+	lit.Value, err = strconv.ParseInt(p.currentToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.currentToken.Literal)
+		p.errors = append(p.errors, msg)
+
+		return nil
+	}
+
+	return lit
 }
 
 func (p *Parser) registerPrefix(tokenType token.Type, fn prefixParseFn) {

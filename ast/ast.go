@@ -134,3 +134,19 @@ func (e *ExpressionStatement) statementNode() {}
 func (e *ExpressionStatement) TokenLiteral() string {
 	return e.Token.Literal
 }
+
+// IntegerLiteral represents string representation of an integer.
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode() {}
+
+func (il *IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+
+func (il *IntegerLiteral) String() string {
+	return il.Token.Literal
+}
