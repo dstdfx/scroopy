@@ -117,13 +117,13 @@ func (r *ReturnStatement) statementNode() {}
 
 // ExpressionStatement represents expression statement.
 type ExpressionStatement struct {
-	Token token.Token
-	Value Expression
+	Token      token.Token
+	Expression Expression
 }
 
 func (e *ExpressionStatement) String() string {
-	if e.Value != nil {
-		return e.Value.String()
+	if e.Expression != nil {
+		return e.Expression.String()
 	}
 
 	return ""
