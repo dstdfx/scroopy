@@ -150,3 +150,27 @@ func (il *IntegerLiteral) TokenLiteral() string {
 func (il *IntegerLiteral) String() string {
 	return il.Token.Literal
 }
+
+// PrefixExpression represents prefix expression e.x: -5, !IsValid(some) and etc.
+type PrefixExpression struct {
+	Token    token.Token // !, -
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) expressionNode() {}
+
+func (pe *PrefixExpression) TokenLiteral() string {
+	return pe.Token.Literal
+}
+
+func (pe *PrefixExpression) String() string {
+	strBuilder := strings.Builder{}
+
+	strBuilder.WriteByte('(')
+	strBuilder.WriteString(pe.Operator)
+	strBuilder.WriteString(pe.Right.String())
+	strBuilder.WriteByte(')')
+
+	return strBuilder.String()
+}
