@@ -135,22 +135,6 @@ func (e *ExpressionStatement) TokenLiteral() string {
 	return e.Token.Literal
 }
 
-// IntegerLiteral represents string representation of an integer.
-type IntegerLiteral struct {
-	Token token.Token
-	Value int64
-}
-
-func (il *IntegerLiteral) expressionNode() {}
-
-func (il *IntegerLiteral) TokenLiteral() string {
-	return il.Token.Literal
-}
-
-func (il *IntegerLiteral) String() string {
-	return il.Token.Literal
-}
-
 // PrefixExpression represents prefix expression e.x: -5, !IsValid(some) and etc.
 type PrefixExpression struct {
 	Token    token.Token // !, -
@@ -198,4 +182,38 @@ func (oe *InfixExpression) String() string {
 	strBuilder.WriteByte(')')
 
 	return strBuilder.String()
+}
+
+/* Basic types */
+
+// IntegerLiteral represents string representation of an integer.
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (il *IntegerLiteral) expressionNode() {}
+
+func (il *IntegerLiteral) TokenLiteral() string {
+	return il.Token.Literal
+}
+
+func (il *IntegerLiteral) String() string {
+	return il.Token.Literal
+}
+
+// BooleanLiteral represents string representation of boolean.
+type BooleanLiteral struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *BooleanLiteral) expressionNode() {}
+
+func (b *BooleanLiteral) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+func (b *BooleanLiteral) String() string {
+	return b.Token.Literal
 }
