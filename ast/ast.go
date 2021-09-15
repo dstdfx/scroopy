@@ -217,3 +217,54 @@ func (b *BooleanLiteral) TokenLiteral() string {
 func (b *BooleanLiteral) String() string {
 	return b.Token.Literal
 }
+
+// IfExpression represents `if-else` expression.
+type IfExpression struct {
+	Token token.Token // The `if` token
+	Condition Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (ie *IfExpression) expressionNode() {}
+
+func (ie *IfExpression) TokenLiteral() string {
+	return ie.Token.Literal
+}
+
+func (ie *IfExpression) String() string {
+	strBuilder := strings.Builder{}
+	strBuilder.WriteString("if")
+	strBuilder.WriteString(ie.Condition.String())
+	strBuilder.WriteByte(' ')
+	strBuilder.WriteString(ie.Consequence.String())
+
+	if ie.Alternative != nil {
+		strBuilder.WriteString("else ")
+		strBuilder.WriteString(ie.Alternative.String())
+	}
+
+	return strBuilder.String()
+}
+
+// BlockStatement represents block statement inside `if-else` expression.
+type BlockStatement struct {
+	Token token.Token // The `{` token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode() {}
+
+func (bs *BlockStatement) TokenLiteral() string {
+	return bs.Token.Literal
+}
+
+func (bs *BlockStatement) String() string {
+	strBuilder := strings.Builder{}
+
+	for _, s := range bs.Statements {
+		strBuilder.WriteString(s.String())
+	}
+
+	return strBuilder.String()
+}
