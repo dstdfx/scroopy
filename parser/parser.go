@@ -181,7 +181,6 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	// TODO: add proper expression parsing
 	for p.currentToken.Type != token.SEMICOLON {
 		p.nextToken()
 	}
@@ -205,7 +204,6 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.currentToken}
 	p.nextToken()
 
-	// TODO: add proper expression parsing
 	for p.currentToken.Type != token.SEMICOLON {
 		p.nextToken()
 	}
@@ -313,7 +311,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 
 	exp.Consequence = p.parseBlockStatement()
 
-	if p.peekToken.Type  == token.ELSE {
+	if p.peekToken.Type == token.ELSE {
 		p.nextToken()
 
 		if !p.expectPeek(token.LBRACE) {
