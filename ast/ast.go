@@ -220,8 +220,8 @@ func (b *BooleanLiteral) String() string {
 
 // IfExpression represents `if-else` expression.
 type IfExpression struct {
-	Token token.Token // The `if` token
-	Condition Expression
+	Token       token.Token // The `if` token
+	Condition   Expression
 	Consequence *BlockStatement
 	Alternative *BlockStatement
 }
@@ -247,9 +247,9 @@ func (ie *IfExpression) String() string {
 	return strBuilder.String()
 }
 
-// BlockStatement represents block statement inside `if-else` expression.
+// BlockStatement represents block statement within `{}`.
 type BlockStatement struct {
-	Token token.Token // The `{` token
+	Token      token.Token // The `{` token
 	Statements []Statement
 }
 
@@ -265,6 +265,34 @@ func (bs *BlockStatement) String() string {
 	for _, s := range bs.Statements {
 		strBuilder.WriteString(s.String())
 	}
+
+	return strBuilder.String()
+}
+
+// FunctionLiteral represents function definition.
+type FunctionLiteral struct {
+	Token      token.Token
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (fl *FunctionLiteral) expressionNode() {}
+
+func (fl *FunctionLiteral) TokenLiteral() string {
+	return fl.Token.Literal
+}
+
+func (fl *FunctionLiteral) String() string {
+	strBuilder := strings.Builder{}
+	params := make([]string, 0)
+	for _, p := range fl.Parameters {
+		params = append(params, p.String())
+	}
+	strBuilder.WriteString(fl.TokenLiteral())
+	strBuilder.WriteByte('(')
+	strBuilder.WriteString(strings.Join(params, ", "))
+	strBuilder.WriteString(") ")
+	strBuilder.WriteString(fl.Body.String())
 
 	return strBuilder.String()
 }
