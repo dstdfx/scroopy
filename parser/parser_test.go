@@ -13,9 +13,9 @@ import (
 
 func TestLetStatements(t *testing.T) {
 	tests := []struct {
-		input string
+		input              string
 		expectedIdentifier string
-		expectedValue interface{}
+		expectedValue      interface{}
 	}{
 		{"let x = 5;", "x", 5},
 		{"let y = true;", "y", true},
@@ -266,6 +266,7 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 
 		return false
 	}
+
 	return true
 }
 
@@ -424,6 +425,7 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add(a + b + c * d / f + g)",
 			"add((((a + b) + ((c * d) / f)) + g))",
 		},
+		//nolint
 		//{
 		//	"a * [1, 2, 3, 4][b * c] * d",
 		//	"((a * ([1, 2, 3, 4][(b * c)])) * d)",

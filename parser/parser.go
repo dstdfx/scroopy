@@ -103,10 +103,7 @@ func (p *Parser) ParseProgram() *ast.Root {
 	root.Statements = make([]ast.Statement, 0)
 
 	for p.currentToken.Type != token.EOF {
-		stmt := p.parseStatement()
-		if stmt != nil {
-			root.Statements = append(root.Statements, stmt)
-		}
+		root.Statements = append(root.Statements, p.parseStatement())
 		p.nextToken()
 	}
 
@@ -340,11 +337,7 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	p.nextToken()
 
 	for p.currentToken.Type != token.RBRACE && p.currentToken.Type != token.EOF {
-		stmt := p.parseStatement()
-		if stmt != nil {
-			block.Statements = append(block.Statements, stmt)
-		}
-
+		block.Statements = append(block.Statements, p.parseStatement())
 		p.nextToken()
 	}
 

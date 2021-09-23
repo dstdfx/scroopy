@@ -159,7 +159,7 @@ func (pe *PrefixExpression) String() string {
 	return strBuilder.String()
 }
 
-// InfixExpression represents infix expressions, e.x: 5 + 5
+// InfixExpression represents infix expressions, e.x: 5 + 5.
 type InfixExpression struct {
 	Token    token.Token // The operator token, e.g. +
 	Left     Expression
@@ -299,8 +299,8 @@ func (fl *FunctionLiteral) String() string {
 
 // CallExpression represents function call.
 type CallExpression struct {
-	Token token.Token
-	Function Expression
+	Token     token.Token
+	Function  Expression
 	Arguments []Expression
 }
 
@@ -321,4 +321,5 @@ func (ce *CallExpression) String() string {
 	strBuilder.WriteString(strings.Join(args, ", "))
 	strBuilder.WriteByte(')')
 
-	return strBuilder.String() }
+	return strBuilder.String()
+}
