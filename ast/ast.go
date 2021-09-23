@@ -296,3 +296,29 @@ func (fl *FunctionLiteral) String() string {
 
 	return strBuilder.String()
 }
+
+// CallExpression represents function call.
+type CallExpression struct {
+	Token token.Token
+	Function Expression
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode() {}
+
+func (ce *CallExpression) TokenLiteral() string {
+	return ce.Token.Literal
+}
+
+func (ce *CallExpression) String() string {
+	strBuilder := strings.Builder{}
+	args := make([]string, 0)
+	for _, a := range ce.Arguments {
+		args = append(args, a.String())
+	}
+	strBuilder.WriteString(ce.Function.String())
+	strBuilder.WriteByte('(')
+	strBuilder.WriteString(strings.Join(args, ", "))
+	strBuilder.WriteByte(')')
+
+	return strBuilder.String() }
