@@ -14,7 +14,7 @@ type Type string
 // Object represents an entity being evaluated.
 type Object interface {
 	Type() Type
-	Inspect()
+	Inspect() string
 }
 
 // Integer represents integer type.
