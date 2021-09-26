@@ -5,7 +5,7 @@ import "fmt"
 const (
 	INTEGER_OBJ Type = "INTEGER"
 	BOOLEAN_OBJ Type = "BOOLEAN"
-	NULL_OBJ Type = "NULL"
+	NULL_OBJ    Type = "NULL"
 )
 
 // Type represents object's type.
@@ -44,7 +44,7 @@ func (b *Boolean) Inspect() string {
 }
 
 // Null represents null type.
-type Null struct {}
+type Null struct{}
 
 func (n *Null) Type() Type {
 	return NULL_OBJ
