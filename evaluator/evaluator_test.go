@@ -1,8 +1,9 @@
-package evaluator
+package evaluator_test
 
 import (
 	"testing"
 
+	"github.com/dstdfx/scroopy/evaluator"
 	"github.com/dstdfx/scroopy/lexer"
 	"github.com/dstdfx/scroopy/object"
 	"github.com/dstdfx/scroopy/parser"
@@ -43,7 +44,7 @@ func testEval(input string) object.Object {
 	p := parser.New(l)
 	program := p.ParseProgram()
 
-	return Eval(program)
+	return evaluator.Eval(program)
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
