@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 
+	"github.com/dstdfx/scroopy/evaluator"
 	"github.com/dstdfx/scroopy/lexer"
 	"github.com/dstdfx/scroopy/parser"
-	"github.com/dstdfx/scroopy/token"
 )
 
 // Start runs the main REPL goroutine.
@@ -33,14 +33,14 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		_, err := io.WriteString(out, root.String()+"\n")
-		if err != nil {
-			handleIOError(err)
+		evaluated := evaluator.Eval(root)
+		if evaluated == nil {
+			return
 		}
 
-		tok := l.NextToken()
-		for ; tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
+		_, err := io.WriteString(out, evaluated.Inspect()+"\n")
+		if err != nil {
+			handleIOError(err)
 		}
 	}
 }
