@@ -5,6 +5,11 @@ import (
 	"github.com/dstdfx/scroopy/object"
 )
 
+var (
+	TRUE  = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
+)
+
 // Eval function evaluates the given node and returns it's "objective"
 // representation.
 func Eval(node ast.Node) object.Object {
@@ -18,7 +23,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
 	case *ast.BooleanLiteral:
-		return &object.Boolean{Value: n.Value}
+		return boolToBooleanObject(n.Value)
 	}
 
 	return nil
@@ -32,4 +37,12 @@ func evalStatements(statements []ast.Statement) object.Object {
 	}
 
 	return result
+}
+
+func boolToBooleanObject(input bool) *object.Boolean {
+	if input {
+		return TRUE
+	}
+
+	return FALSE
 }
