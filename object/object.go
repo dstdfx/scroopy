@@ -9,6 +9,12 @@ const (
 	ReturnValueObj Type = "RETURN_VALUE"
 )
 
+var (
+	NULL  = &Null{}
+	TRUE  = &Boolean{Value: true}
+	FALSE = &Boolean{Value: false}
+)
+
 // Type represents object's type.
 type Type string
 

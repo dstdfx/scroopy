@@ -5,13 +5,6 @@ import (
 	"github.com/dstdfx/scroopy/object"
 )
 
-// TODO: put to object package
-var (
-	NULL  = &object.Null{}
-	TRUE  = &object.Boolean{Value: true}
-	FALSE = &object.Boolean{Value: false}
-)
-
 // Eval function evaluates the given node and returns it's "objective"
 // representation.
 func Eval(node ast.Node) object.Object {
@@ -37,7 +30,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.InfixExpression:
 		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
 	default:
-		return NULL
+		return object.NULL
 	}
 }
 
@@ -71,7 +64,7 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 
 		return boolToBooleanObject(left != right)
 	default:
-		return NULL
+		return object.NULL
 	}
 }
 
@@ -98,7 +91,7 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 		return boolToBooleanObject(leftVal.Value != rightVal.Value)
 	default:
 		// TODO: add error
-		return NULL
+		return object.NULL
 	}
 }
 
@@ -111,7 +104,7 @@ func evalIntegerBooleanInfixExpression(op string, left, right object.Object) obj
 	case "!=":
 		return boolToBooleanObject((leftVal.Value != 0) != rightVal.Value)
 	default:
-		return NULL
+		return object.NULL
 	}
 }
 
@@ -123,26 +116,26 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 		return evalMinusPrefixOperatorExpression(right)
 	default:
 		// TODO: add error
-		return NULL
+		return object.NULL
 	}
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {
 	switch right {
-	case TRUE:
-		return FALSE
-	case FALSE:
-		return TRUE
-	case NULL:
-		return TRUE
+	case object.TRUE:
+		return object.FALSE
+	case object.FALSE:
+		return object.TRUE
+	case object.NULL:
+		return object.TRUE
 	default:
-		return FALSE
+		return object.FALSE
 	}
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.IntegerObj {
-		return NULL
+		return object.NULL
 	}
 
 	return &object.Integer{
@@ -182,10 +175,10 @@ func evalBlockStatements(block *ast.BlockStatement) object.Object {
 
 func boolToBooleanObject(input bool) *object.Boolean {
 	if input {
-		return TRUE
+		return object.TRUE
 	}
 
-	return FALSE
+	return object.FALSE
 }
 
 func evalIfExpression(ie *ast.IfExpression) object.Object {
@@ -199,16 +192,16 @@ func evalIfExpression(ie *ast.IfExpression) object.Object {
 		return Eval(ie.Alternative)
 	}
 
-	return NULL
+	return object.NULL
 }
 
 func isTruthy(obj object.Object) bool {
 	switch obj {
-	case NULL:
+	case object.NULL:
 		return false
-	case TRUE:
+	case object.TRUE:
 		return true
-	case FALSE:
+	case object.FALSE:
 		return false
 	default:
 		return true
