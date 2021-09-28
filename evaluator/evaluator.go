@@ -32,7 +32,6 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		env.Set(n.Name.Value, evaluated)
 
-		return evaluated
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
@@ -61,9 +60,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(n.Operator, leftEvaluated, rightEvaluated)
 	case *ast.Identifier:
 		return evalIdentifier(n, env)
-	default:
-		return object.NULL
 	}
+
+	return nil
 }
 
 func newError(format string, a ...interface{}) *object.Error {
