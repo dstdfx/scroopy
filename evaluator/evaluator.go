@@ -5,6 +5,7 @@ import (
 	"github.com/dstdfx/scroopy/object"
 )
 
+// TODO: put to object package
 var (
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
@@ -24,6 +25,10 @@ func Eval(node ast.Node) object.Object {
 		return evalPrefixExpression(n.Operator, Eval(n.Right))
 	case *ast.InfixExpression:
 		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
+	case *ast.BlockStatement:
+		return evalStatements(n.Statements)
+	case *ast.IfExpression:
+		return evalIfExpression(n)
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
@@ -159,4 +164,31 @@ func boolToBooleanObject(input bool) *object.Boolean {
 	}
 
 	return FALSE
+}
+
+func evalIfExpression(ie *ast.IfExpression) object.Object {
+	cond := Eval(ie.Condition)
+	if isTruthy(cond) {
+		return Eval(ie.Consequence)
+	}
+
+	// TODO: maybe just return Eval(ie.Alternative) here, Eval will return NULL anyways
+	if ie.Alternative != nil {
+		return Eval(ie.Alternative)
+	}
+
+	return NULL
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj {
+	case NULL:
+		return false
+	case TRUE:
+		return true
+	case FALSE:
+		return false
+	default:
+		return true
+	}
 }
