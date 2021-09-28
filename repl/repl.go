@@ -8,6 +8,7 @@ import (
 
 	"github.com/dstdfx/scroopy/evaluator"
 	"github.com/dstdfx/scroopy/lexer"
+	"github.com/dstdfx/scroopy/object"
 	"github.com/dstdfx/scroopy/parser"
 )
 
@@ -15,6 +16,7 @@ import (
 // It reads data from the given io.Reader and prints parsed AST.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
 
 	for {
 		fmt.Print(">> ")
@@ -33,7 +35,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(root)
+		evaluated := evaluator.Eval(root, env)
 		if evaluated == nil {
 			return
 		}
