@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/dstdfx/scroopy/ast"
 	"github.com/dstdfx/scroopy/object"
 )
@@ -17,7 +19,12 @@ func Eval(node ast.Node) object.Object {
 	case *ast.BlockStatement:
 		return evalBlockStatements(n)
 	case *ast.ReturnStatement:
-		return &object.ReturnValue{Value: Eval(n.Value)}
+		evaluated := Eval(n.Value)
+		if isError(evaluated) {
+			return evaluated
+		}
+
+		return &object.ReturnValue{Value: evaluated}
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
@@ -26,12 +33,35 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IfExpression:
 		return evalIfExpression(n)
 	case *ast.PrefixExpression:
-		return evalPrefixExpression(n.Operator, Eval(n.Right))
+		evaluated := Eval(n.Right)
+		if isError(evaluated) {
+			return evaluated
+		}
+
+		return evalPrefixExpression(n.Operator, evaluated)
 	case *ast.InfixExpression:
-		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
+		rightEvaluated := Eval(n.Right)
+		if isError(rightEvaluated) {
+			return rightEvaluated
+		}
+
+		leftEvaluated := Eval(n.Left)
+		if isError(leftEvaluated) {
+			return leftEvaluated
+		}
+
+		return evalInfixExpression(n.Operator, leftEvaluated, rightEvaluated)
 	default:
 		return object.NULL
 	}
+}
+
+func newError(format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf(format, a...)}
+}
+
+func isError(obj object.Object) bool {
+	return obj != nil && obj.Type() == object.ErrorObj
 }
 
 func evalInfixExpression(op string, left, right object.Object) object.Object {
@@ -63,8 +93,10 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 		}
 
 		return boolToBooleanObject(left != right)
+	case left.Type() != right.Type():
+		return newError("type mismatch: %s %s %s", left.Type(), op, right.Type())
 	default:
-		return object.NULL
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -90,8 +122,7 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 	case "!=":
 		return boolToBooleanObject(leftVal.Value != rightVal.Value)
 	default:
-		// TODO: add error
-		return object.NULL
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -115,8 +146,7 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		// TODO: add error
-		return object.NULL
+		return newError("unknown operator: %s%s", op, right.Type())
 	}
 }
 
@@ -135,7 +165,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.IntegerObj {
-		return object.NULL
+		return newError("unknown operator: -%s", right.Type())
 	}
 
 	return &object.Integer{
@@ -149,10 +179,11 @@ func evalRoot(root *ast.Root) object.Object {
 	for _, s := range root.Statements {
 		result = Eval(s)
 
-		if result.Type() == object.ReturnValueObj {
-			result = result.(*object.ReturnValue).Value
-
-			break
+		switch result := result.(type) {
+		case *object.ReturnValue:
+			return result.Value
+		case *object.Error:
+			return result
 		}
 	}
 
@@ -165,7 +196,7 @@ func evalBlockStatements(block *ast.BlockStatement) object.Object {
 	for _, s := range block.Statements {
 		result = Eval(s)
 
-		if result != nil && result.Type() == object.ReturnValueObj {
+		if result != nil && result.Type() == object.ReturnValueObj || result.Type() == object.ErrorObj {
 			break
 		}
 	}
@@ -182,12 +213,15 @@ func boolToBooleanObject(input bool) *object.Boolean {
 }
 
 func evalIfExpression(ie *ast.IfExpression) object.Object {
-	cond := Eval(ie.Condition)
-	if isTruthy(cond) {
+	condEvaluated := Eval(ie.Condition)
+	if isError(condEvaluated) {
+		return condEvaluated
+	}
+
+	if isTruthy(condEvaluated) {
 		return Eval(ie.Consequence)
 	}
 
-	// TODO: maybe just return Eval(ie.Alternative) here, Eval will return NULL anyways
 	if ie.Alternative != nil {
 		return Eval(ie.Alternative)
 	}

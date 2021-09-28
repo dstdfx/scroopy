@@ -7,6 +7,7 @@ const (
 	BooleanObj     Type = "BOOLEAN"
 	NullObj        Type = "NULL"
 	ReturnValueObj Type = "RETURN_VALUE"
+	ErrorObj            = "ERROR"
 )
 
 var (
@@ -72,4 +73,17 @@ func (rv *ReturnValue) Type() Type {
 
 func (rv *ReturnValue) Inspect() string {
 	return rv.Value.Inspect()
+}
+
+// Error represents an error object.
+type Error struct {
+	Message string
+}
+
+func (e *Error) Type() Type {
+	return ErrorObj
+}
+
+func (e *Error) Inspect() string {
+	return fmt.Sprintf("ERROR: %s", e.Message)
 }
