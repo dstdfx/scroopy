@@ -22,12 +22,42 @@ func Eval(node ast.Node) object.Object {
 		return Eval(n.Expression)
 	case *ast.PrefixExpression:
 		return evalPrefixExpression(n.Operator, Eval(n.Right))
+	case *ast.InfixExpression:
+		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
 	case *ast.BooleanLiteral:
 		return boolToBooleanObject(n.Value)
 	default:
+		return NULL
+	}
+}
+
+func evalInfixExpression(op string, left, right object.Object) object.Object {
+	switch {
+	case left.Type() == object.IntegerObj && right.Type() == object.IntegerObj:
+		return evalIntegerInfixExpression(op, left, right)
+	default:
+		return NULL
+	}
+}
+
+func evalIntegerInfixExpression(op string, left, right object.Object) object.Object {
+	leftVal := left.(*object.Integer)
+	rightVal := right.(*object.Integer)
+
+	switch op {
+	case "+":
+		return &object.Integer{Value: leftVal.Value + rightVal.Value}
+	case "-":
+		return &object.Integer{Value: leftVal.Value - rightVal.Value}
+	case "/":
+		return &object.Integer{Value: leftVal.Value / rightVal.Value}
+	case "*":
+		return &object.Integer{Value: leftVal.Value * rightVal.Value}
+	default:
+		// TODO: add error
 		return NULL
 	}
 }
