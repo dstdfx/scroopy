@@ -18,22 +18,24 @@ func Eval(node ast.Node) object.Object {
 	switch n := node.(type) {
 	// Statements
 	case *ast.Root:
-		return evalStatements(n.Statements)
+		return evalRoot(n)
 	case *ast.ExpressionStatement:
 		return Eval(n.Expression)
-	case *ast.PrefixExpression:
-		return evalPrefixExpression(n.Operator, Eval(n.Right))
-	case *ast.InfixExpression:
-		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
 	case *ast.BlockStatement:
-		return evalStatements(n.Statements)
-	case *ast.IfExpression:
-		return evalIfExpression(n)
+		return evalBlockStatements(n)
+	case *ast.ReturnStatement:
+		return &object.ReturnValue{Value: Eval(n.Value)}
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: n.Value}
 	case *ast.BooleanLiteral:
 		return boolToBooleanObject(n.Value)
+	case *ast.IfExpression:
+		return evalIfExpression(n)
+	case *ast.PrefixExpression:
+		return evalPrefixExpression(n.Operator, Eval(n.Right))
+	case *ast.InfixExpression:
+		return evalInfixExpression(n.Operator, Eval(n.Left), Eval(n.Right))
 	default:
 		return NULL
 	}
@@ -148,11 +150,31 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	}
 }
 
-func evalStatements(statements []ast.Statement) object.Object {
+func evalRoot(root *ast.Root) object.Object {
 	var result object.Object
 
-	for _, s := range statements {
+	for _, s := range root.Statements {
 		result = Eval(s)
+
+		if result.Type() == object.ReturnValueObj {
+			result = result.(*object.ReturnValue).Value
+
+			break
+		}
+	}
+
+	return result
+}
+
+func evalBlockStatements(block *ast.BlockStatement) object.Object {
+	var result object.Object
+
+	for _, s := range block.Statements {
+		result = Eval(s)
+
+		if result != nil && result.Type() == object.ReturnValueObj {
+			break
+		}
 	}
 
 	return result

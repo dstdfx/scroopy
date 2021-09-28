@@ -3,9 +3,10 @@ package object
 import "fmt"
 
 const (
-	IntegerObj Type = "INTEGER"
-	BooleanObj Type = "BOOLEAN"
-	NullObj    Type = "NULL"
+	IntegerObj     Type = "INTEGER"
+	BooleanObj     Type = "BOOLEAN"
+	NullObj        Type = "NULL"
+	ReturnValueObj Type = "RETURN_VALUE"
 )
 
 // Type represents object's type.
@@ -52,4 +53,17 @@ func (n *Null) Type() Type {
 
 func (n *Null) Inspect() string {
 	return "null"
+}
+
+// ReturnValue represents return statement value.
+type ReturnValue struct {
+	Value Object
+}
+
+func (rv *ReturnValue) Type() Type {
+	return ReturnValueObj
+}
+
+func (rv *ReturnValue) Inspect() string {
+	return rv.Value.Inspect()
 }
