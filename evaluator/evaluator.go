@@ -69,6 +69,7 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
+		// TODO: add error
 		return NULL
 	}
 }
