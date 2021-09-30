@@ -1,6 +1,11 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/dstdfx/scroopy/ast"
+)
 
 const (
 	IntegerObj     Type = "INTEGER"
@@ -8,6 +13,7 @@ const (
 	NullObj        Type = "NULL"
 	ReturnValueObj Type = "RETURN_VALUE"
 	ErrorObj            = "ERROR"
+	FunctionObj         = "FUNCTION"
 )
 
 var (
@@ -86,4 +92,33 @@ func (e *Error) Type() Type {
 
 func (e *Error) Inspect() string {
 	return fmt.Sprintf("ERROR: %s", e.Message)
+}
+
+// Function represents a function.
+type Function struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f *Function) Type() Type {
+	return FunctionObj
+}
+
+func (f *Function) Inspect() string {
+	strBuilder := strings.Builder{}
+
+	params := make([]string, 0)
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+
+	strBuilder.WriteString("fn")
+	strBuilder.WriteByte('(')
+	strBuilder.WriteString(strings.Join(params, ", "))
+	strBuilder.WriteString(") {\n")
+	strBuilder.WriteString(f.Body.String())
+	strBuilder.WriteString("\n}")
+
+	return strBuilder.String()
 }

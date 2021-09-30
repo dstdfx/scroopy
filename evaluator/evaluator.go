@@ -31,6 +31,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return evaluated
 		}
 		env.Set(n.Name.Value, evaluated)
+	case *ast.FunctionLiteral:
+		return &object.Function{
+			Parameters: n.Parameters,
+			Body:       n.Body,
+			Env:        env,
+		}
 
 	// Expressions
 	case *ast.IntegerLiteral:
@@ -60,6 +66,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(n.Operator, leftEvaluated, rightEvaluated)
 	case *ast.Identifier:
 		return evalIdentifier(n, env)
+	case *ast.CallExpression:
+		function := Eval(n.Function, env)
+		if isError(function) {
+			return function
+		}
+		args := evalExpressions(n.Arguments, env)
+		if len(args) == 1 && isError(args[0]) {
+			return args[0]
+		}
+
+		return applyFunction(function, args)
 	}
 
 	return nil
@@ -71,6 +88,47 @@ func newError(format string, a ...interface{}) *object.Error {
 
 func isError(obj object.Object) bool {
 	return obj != nil && obj.Type() == object.ErrorObj
+}
+
+func applyFunction(fn object.Object, args []object.Object) object.Object {
+	function, ok := fn.(*object.Function)
+	if !ok {
+		return newError("not a function: %s", fn.Type())
+	}
+	extendedEnv := extendFunctionEnv(function, args)
+	evaluated := Eval(function.Body, extendedEnv)
+
+	return unwrapReturnValue(evaluated)
+}
+
+func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
+	env := object.NewEnclosedEnvironment(fn.Env)
+	for paramIdx, param := range fn.Parameters {
+		env.Set(param.Value, args[paramIdx])
+	}
+
+	return env
+}
+
+func unwrapReturnValue(obj object.Object) object.Object {
+	if returnValue, ok := obj.(*object.ReturnValue); ok {
+		return returnValue.Value
+	}
+
+	return obj
+}
+
+func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {
+	result := make([]object.Object, 0, len(exps))
+	for _, e := range exps {
+		evaluated := Eval(e, env)
+		if isError(evaluated) {
+			return []object.Object{evaluated}
+		}
+		result = append(result, evaluated)
+	}
+
+	return result
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
@@ -214,8 +272,11 @@ func evalBlockStatements(block *ast.BlockStatement, env *object.Environment) obj
 	for _, s := range block.Statements {
 		result = Eval(s, env)
 
-		if result != nil && result.Type() == object.ReturnValueObj || result.Type() == object.ErrorObj {
-			break
+		if result != nil {
+			rt := result.Type()
+			if rt == object.ReturnValueObj || rt == object.ErrorObj {
+				break
+			}
 		}
 	}
 
