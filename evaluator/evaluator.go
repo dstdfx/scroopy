@@ -66,6 +66,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(n.Operator, leftEvaluated, rightEvaluated)
 	case *ast.Identifier:
 		return evalIdentifier(n, env)
+	case *ast.StringLiteral:
+		return &object.String{Value: n.Value}
 	case *ast.CallExpression:
 		function := Eval(n.Function, env)
 		if isError(function) {

@@ -20,6 +20,8 @@ if (5 < result) {
 } else {
        return false;
 }
+"foobar"
+"foo bar"
 `
 
 	tests := []struct {
@@ -79,6 +81,8 @@ if (5 < result) {
 		{expectedType: token.FALSE, expectedLiteral: "false"},
 		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
 		{expectedType: token.RBRACE, expectedLiteral: "}"},
+		{expectedType: token.STRING, expectedLiteral: "foobar"},
+		{expectedType: token.STRING, expectedLiteral: "foo bar"},
 		{expectedType: token.EOF},
 	}
 

@@ -218,6 +218,22 @@ func (b *BooleanLiteral) String() string {
 	return b.Token.Literal
 }
 
+// StringLiteral represents string.
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (sl *StringLiteral) expressionNode() {}
+
+func (sl *StringLiteral) TokenLiteral() string {
+	return sl.Value
+}
+
+func (sl *StringLiteral) String() string {
+	return sl.Value
+}
+
 // IfExpression represents `if-else` expression.
 type IfExpression struct {
 	Token       token.Token // The `if` token

@@ -11,6 +11,7 @@ const (
 	IntegerObj     Type = "INTEGER"
 	BooleanObj     Type = "BOOLEAN"
 	NullObj        Type = "NULL"
+	StringObj      Type = "STRING"
 	ReturnValueObj Type = "RETURN_VALUE"
 	ErrorObj            = "ERROR"
 	FunctionObj         = "FUNCTION"
@@ -66,6 +67,19 @@ func (n *Null) Type() Type {
 
 func (n *Null) Inspect() string {
 	return "null"
+}
+
+// String represents string type.
+type String struct {
+	Value string
+}
+
+func (s *String) Type() Type {
+	return StringObj
+}
+
+func (s *String) Inspect() string {
+	return s.Value
 }
 
 // ReturnValue represents return statement value.
