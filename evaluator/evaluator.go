@@ -146,6 +146,8 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.IntegerObj && right.Type() == object.IntegerObj:
 		return evalIntegerInfixExpression(op, left, right)
+	case left.Type() == object.StringObj && right.Type() == object.StringObj:
+		return evalStringInfixExpression(op, left, right)
 	// TODO: get rid of duplicated code
 	case op == "==":
 		// boolean [infix op] integer
@@ -173,6 +175,22 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 		return boolToBooleanObject(left != right)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s", left.Type(), op, right.Type())
+	default:
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
+	}
+}
+
+func evalStringInfixExpression(op string, left, right object.Object) object.Object {
+	leftVal := left.(*object.String)
+	rightVal := right.(*object.String)
+
+	switch op {
+	case "+":
+		return &object.String{Value: leftVal.Value + rightVal.Value}
+	case "==":
+		return &object.Boolean{Value: leftVal.Value == rightVal.Value}
+	case "!=":
+		return &object.Boolean{Value: leftVal.Value != rightVal.Value}
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
 	}
