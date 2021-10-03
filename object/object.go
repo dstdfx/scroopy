@@ -15,6 +15,7 @@ const (
 	ReturnValueObj Type = "RETURN_VALUE"
 	ErrorObj            = "ERROR"
 	FunctionObj         = "FUNCTION"
+	BuildInObj          = "BUILDIN"
 )
 
 var (
@@ -135,4 +136,20 @@ func (f *Function) Inspect() string {
 	strBuilder.WriteString("\n}")
 
 	return strBuilder.String()
+}
+
+// BuildInFunction represents build-in function definition.
+type BuildInFunction func(args ...Object) Object
+
+// BuildIn represents a wrapper around BuildInFunction that implements Object interface.
+type BuildIn struct {
+	Fn BuildInFunction
+}
+
+func (b *BuildIn) Type() Type {
+	return BuildInObj
+}
+
+func (b *BuildIn) Inspect() string {
+	return "builtin function"
 }
