@@ -7,6 +7,23 @@ import (
 	"github.com/dstdfx/scroopy/object"
 )
 
+var buildInFuncs = map[string]*object.BuildIn{
+	"len": {
+		Fn: func(args ...object.Object) object.Object {
+			lenArgs := len(args)
+			if lenArgs != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", lenArgs)
+			}
+
+			switch arg := args[0].(type) {
+			case *object.String:
+				return &object.Integer{Value: int64(len(arg.Value))}
+			default:
+				return newError("argument to `len` not supported, got %s", args[0].Type())
+			}
+		}},
+}
+
 // Eval function evaluates the given node and returns it's "objective"
 // representation.
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -93,14 +110,17 @@ func isError(obj object.Object) bool {
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
+	switch fn := fn.(type) {
+	case *object.Function:
+		extendedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+
+		return unwrapReturnValue(evaluated)
+	case *object.BuildIn:
+		return fn.Fn(args...)
+	default:
 		return newError("not a function: %s", fn.Type())
 	}
-	extendedEnv := extendFunctionEnv(function, args)
-	evaluated := Eval(function.Body, extendedEnv)
-
-	return unwrapReturnValue(evaluated)
 }
 
 func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
@@ -134,12 +154,15 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 }
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("identifier not found: " + node.Value)
+	if val, ok := env.Get(node.Value); ok {
+		return val
 	}
 
-	return val
+	if buildin, ok := buildInFuncs[node.Value]; ok {
+		return buildin
+	}
+
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalInfixExpression(op string, left, right object.Object) object.Object {
