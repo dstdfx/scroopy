@@ -22,6 +22,7 @@ if (5 < result) {
 }
 "foobar"
 "foo bar"
+[1,2];
 `
 
 	tests := []struct {
@@ -83,6 +84,12 @@ if (5 < result) {
 		{expectedType: token.RBRACE, expectedLiteral: "}"},
 		{expectedType: token.STRING, expectedLiteral: "foobar"},
 		{expectedType: token.STRING, expectedLiteral: "foo bar"},
+		{expectedType: token.LBRACKET, expectedLiteral: "["},
+		{expectedType: token.INT, expectedLiteral: "1"},
+		{expectedType: token.COMMA, expectedLiteral: ","},
+		{expectedType: token.INT, expectedLiteral: "2"},
+		{expectedType: token.RBRACKET, expectedLiteral: "]"},
+		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
 		{expectedType: token.EOF},
 	}
 
