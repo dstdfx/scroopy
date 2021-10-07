@@ -64,6 +64,29 @@ var buildInFuncs = map[string]*object.BuildIn{
 			return object.NULL
 		},
 	},
+	"rest": {
+		Fn: func(args ...object.Object) object.Object {
+			lenArgs := len(args)
+			if lenArgs != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", lenArgs)
+			}
+
+			if args[0].Type() != object.ArrayObj {
+				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arrayObj := args[0].(*object.Array)
+			arrayLength := len(arrayObj.Elements)
+			if arrayLength > 0 {
+				newElements := make([]object.Object, arrayLength-1)
+				copy(newElements, arrayObj.Elements[1:arrayLength])
+
+				return &object.Array{Elements: newElements}
+			}
+
+			return object.NULL
+		},
+	},
 }
 
 // Eval function evaluates the given node and returns it's "objective"
