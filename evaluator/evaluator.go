@@ -25,6 +25,45 @@ var buildInFuncs = map[string]*object.BuildIn{
 				return newError("argument to `len` not supported, got %s", args[0].Type())
 			}
 		}},
+	"first": {
+		Fn: func(args ...object.Object) object.Object {
+			lenArgs := len(args)
+			if lenArgs != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", lenArgs)
+			}
+
+			if args[0].Type() != object.ArrayObj {
+				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arrayObj := args[0].(*object.Array)
+			if len(arrayObj.Elements) > 0 {
+				return arrayObj.Elements[0]
+			}
+
+			return object.NULL
+		},
+	},
+	"last": {
+		Fn: func(args ...object.Object) object.Object {
+			lenArgs := len(args)
+			if lenArgs != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", lenArgs)
+			}
+
+			if args[0].Type() != object.ArrayObj {
+				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arrayObj := args[0].(*object.Array)
+			arrayLength := len(arrayObj.Elements)
+			if arrayLength > 0 {
+				return arrayObj.Elements[arrayLength-1]
+			}
+
+			return object.NULL
+		},
+	},
 }
 
 // Eval function evaluates the given node and returns it's "objective"
