@@ -364,6 +364,25 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`rest(rest(rest(rest([1,2,3]))))`,
 			object.NULL,
 		},
+		{
+			`push([1,2,3], 4)`,
+			object.Array{
+				Elements: []object.Object{
+					&object.Integer{Value: 1},
+					&object.Integer{Value: 2},
+					&object.Integer{Value: 3},
+					&object.Integer{Value: 4},
+				},
+			},
+		},
+		{
+			`push([], 1)`,
+			object.Array{
+				Elements: []object.Object{
+					&object.Integer{Value: 1},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
