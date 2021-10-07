@@ -365,3 +365,28 @@ func (a *ArrayLiteral) String() string {
 
 	return strBuilder.String()
 }
+
+// IndexExpression represents index expression: <left-expression>[<index-expression>].
+type IndexExpression struct {
+	Token token.Token
+	Left  Expression
+	Index Expression
+}
+
+func (ie *IndexExpression) expressionNode() {}
+
+func (ie *IndexExpression) TokenLiteral() string {
+	return ie.Token.Literal
+}
+
+func (ie *IndexExpression) String() string {
+	strBuilder := strings.Builder{}
+
+	strBuilder.WriteByte('(')
+	strBuilder.WriteString(ie.Left.String())
+	strBuilder.WriteByte('[')
+	strBuilder.WriteString(ie.Index.String())
+	strBuilder.WriteString("])")
+
+	return strBuilder.String()
+}
