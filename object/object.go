@@ -16,6 +16,7 @@ const (
 	ErrorObj            = "ERROR"
 	FunctionObj         = "FUNCTION"
 	BuildInObj          = "BUILDIN"
+	ArrayObj            = "ARRAY"
 )
 
 var (
@@ -152,4 +153,27 @@ func (b *BuildIn) Type() Type {
 
 func (b *BuildIn) Inspect() string {
 	return "builtin function"
+}
+
+type Array struct {
+	Elements []Object
+}
+
+func (ao *Array) Type() Type {
+	return ArrayObj
+}
+
+func (ao *Array) Inspect() string {
+	strBuilder := strings.Builder{}
+
+	strBuilder.WriteByte('[')
+	for i, el := range ao.Elements {
+		strBuilder.WriteString(el.Inspect())
+		if i != len(ao.Elements)-1 {
+			strBuilder.WriteString(", ")
+		}
+	}
+	strBuilder.WriteByte(']')
+
+	return strBuilder.String()
 }
