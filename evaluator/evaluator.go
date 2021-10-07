@@ -103,6 +103,18 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		return &object.Array{Elements: elements}
+	case *ast.IndexExpression:
+		left := Eval(n.Left, env)
+		if isError(left) {
+			return left
+		}
+
+		index := Eval(n.Index, env)
+		if isError(index) {
+			return index
+		}
+
+		return evalIndexExpression(left, index)
 	}
 
 	return nil
@@ -369,4 +381,25 @@ func isTruthy(obj object.Object) bool {
 	default:
 		return true
 	}
+}
+
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ArrayObj && index.Type() == object.IntegerObj:
+		return evalArrayIndexExpression(left, index)
+	default:
+		// TODO: check index type and write appropriate error msg
+		return newError("index operator not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObj := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+
+	if idx < 0 || idx > int64(len(arrayObj.Elements)-1) {
+		return object.NULL
+	}
+
+	return arrayObj.Elements[idx]
 }
