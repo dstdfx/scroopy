@@ -115,7 +115,7 @@ if (5 < result) {
 }
 
 func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
-	input := `=+-*/(),;{}@!<>==!=`
+	input := `=+-*/(),;{}@!<>==!=**`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -188,6 +188,10 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 		{
 			expectedType:    token.NOTEQUAL,
 			expectedLiteral: "!=",
+		},
+		{
+			expectedType:    token.POW,
+			expectedLiteral: "**",
 		},
 		{
 			expectedType:    token.EOF,

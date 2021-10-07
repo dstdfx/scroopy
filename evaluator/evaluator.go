@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/dstdfx/scroopy/ast"
 	"github.com/dstdfx/scroopy/object"
@@ -251,6 +252,9 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 		return &object.Integer{Value: leftVal.Value / rightVal.Value}
 	case "*":
 		return &object.Integer{Value: leftVal.Value * rightVal.Value}
+	case "**":
+		// TODO: fix me when floats are supported
+		return &object.Integer{Value: int64(math.Pow(float64(leftVal.Value), float64(rightVal.Value)))}
 	case ">":
 		return boolToBooleanObject(leftVal.Value > rightVal.Value)
 	case "<":

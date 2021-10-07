@@ -306,6 +306,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"5 ** 2;", 5, "**", 2},
 	}
 
 	for _, tt := range infixTests {
@@ -354,6 +355,10 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		{
 			"!-a",
 			"(!(-a))",
+		},
+		{
+			"a ** 2 + 3",
+			"((a ** 2) + 3)",
 		},
 		{
 			"a + b + c",

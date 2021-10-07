@@ -21,6 +21,7 @@ const (
 	GT       = ">"
 	EQ       = "=="
 	NOTEQUAL = "!="
+	POW      = "**"
 
 	// Delimiters.
 	COMMA     = ","

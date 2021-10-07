@@ -32,6 +32,7 @@ var precedences = map[token.Type]int{
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LBRACKET: INDEX,
+	token.POW:      PRODUCT,
 }
 
 var ErrExpectedNextTokenFmt = "expected next token to be '%s', got '%s' instead"
@@ -80,6 +81,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.POW, p.parseInfixExpression)
 
 	// In order to initialize `current` and `peek` token states
 	p.nextToken()
