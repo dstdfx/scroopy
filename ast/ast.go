@@ -339,3 +339,29 @@ func (ce *CallExpression) String() string {
 
 	return strBuilder.String()
 }
+
+// ArrayLiteral represents an array containing a list of expressions.
+type ArrayLiteral struct {
+	Token    token.Token
+	Elements []Expression
+}
+
+func (a *ArrayLiteral) expressionNode() {}
+
+func (a *ArrayLiteral) TokenLiteral() string {
+	return a.Token.Literal
+}
+
+func (a *ArrayLiteral) String() string {
+	strBuilder := strings.Builder{}
+	strBuilder.WriteByte('[')
+	for i, el := range a.Elements {
+		strBuilder.WriteString(el.String())
+		if i != len(a.Elements)-1 {
+			strBuilder.WriteString(", ")
+		}
+	}
+	strBuilder.WriteByte(']')
+
+	return strBuilder.String()
+}
