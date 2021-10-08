@@ -220,17 +220,17 @@ type HashPair struct {
 	Value Object
 }
 
-// Hash represents hash map.
-type Hash struct {
+// HashMap represents hash map.
+type HashMap struct {
 	ObjType Type
 	Pairs   map[HashKey]HashPair
 }
 
-func (h *Hash) Type() Type {
+func (h *HashMap) Type() Type {
 	return HashObj
 }
 
-func (h *Hash) Inspect() string {
+func (h *HashMap) Inspect() string {
 	strBuilder := strings.Builder{}
 	strBuilder.WriteByte('{')
 
