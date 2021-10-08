@@ -18,7 +18,7 @@ const (
 	FunctionObj         = "FUNCTION"
 	BuildInObj          = "BUILDIN"
 	ArrayObj            = "ARRAY"
-	HashObj             = "HASH"
+	HashObj             = "HASHMAP"
 )
 
 var (
