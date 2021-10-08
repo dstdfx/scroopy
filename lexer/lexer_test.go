@@ -23,6 +23,7 @@ if (5 < result) {
 "foobar"
 "foo bar"
 [1,2];
+{"foo": "bar"}
 `
 
 	tests := []struct {
@@ -90,6 +91,11 @@ if (5 < result) {
 		{expectedType: token.INT, expectedLiteral: "2"},
 		{expectedType: token.RBRACKET, expectedLiteral: "]"},
 		{expectedType: token.SEMICOLON, expectedLiteral: ";"},
+		{expectedType: token.LBRACE, expectedLiteral: "{"},
+		{expectedType: token.STRING, expectedLiteral: "foo"},
+		{expectedType: token.COLON, expectedLiteral: ":"},
+		{expectedType: token.STRING, expectedLiteral: "bar"},
+		{expectedType: token.RBRACE, expectedLiteral: "}"},
 		{expectedType: token.EOF},
 	}
 
@@ -115,7 +121,7 @@ if (5 < result) {
 }
 
 func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
-	input := `=+-*/(),;{}@!<>==!=**`
+	input := `=+-*/(),:;{}@!<>==!=**`
 
 	tests := []struct {
 		expectedType    token.Type
@@ -152,6 +158,10 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 		{
 			expectedType:    token.COMMA,
 			expectedLiteral: ",",
+		},
+		{
+			expectedType:    token.COLON,
+			expectedLiteral: ":",
 		},
 		{
 			expectedType:    token.SEMICOLON,
