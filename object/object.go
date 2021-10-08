@@ -18,6 +18,7 @@ const (
 	FunctionObj         = "FUNCTION"
 	BuildInObj          = "BUILDIN"
 	ArrayObj            = "ARRAY"
+	HashObj             = "HASH"
 )
 
 var (
@@ -179,10 +180,17 @@ func (ao *Array) Inspect() string {
 	return strBuilder.String()
 }
 
+// Hashable describes an object that can be used as a key in hash map.
+type Hashable interface {
+	HashKey() HashKey
+}
+
 type HashKey struct {
 	Type  Type
 	Value uint64
 }
+
+// TODO: cache hash values
 
 func (b *Boolean) HashKey() HashKey {
 	var value uint64
@@ -204,4 +212,42 @@ func (s *String) HashKey() HashKey {
 	h.Write([]byte(s.Value))
 
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
+}
+
+// HashPair represents <key>:<value> pair in the hash.
+type HashPair struct {
+	Key   Object
+	Value Object
+}
+
+// Hash represents hash map.
+type Hash struct {
+	ObjType Type
+	Pairs   map[HashKey]HashPair
+}
+
+func (h *Hash) Type() Type {
+	return HashObj
+}
+
+func (h *Hash) Inspect() string {
+	strBuilder := strings.Builder{}
+	strBuilder.WriteByte('{')
+
+	count := 0
+	length := len(h.Pairs)
+	for _, pair := range h.Pairs {
+		strBuilder.WriteString(pair.Key.Inspect())
+		strBuilder.WriteString(":")
+		strBuilder.WriteString(pair.Value.Inspect())
+
+		if count != length-1 {
+			strBuilder.WriteString(", ")
+		}
+		count++
+	}
+
+	strBuilder.WriteByte('}')
+
+	return strBuilder.String()
 }
