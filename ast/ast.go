@@ -390,3 +390,38 @@ func (ie *IndexExpression) String() string {
 
 	return strBuilder.String()
 }
+
+// HashLiteral represents hash literal: { <expression>: <expression> }.
+type HashLiteral struct {
+	Token token.Token // the '{' token
+	Pairs map[Expression]Expression
+}
+
+func (hl *HashLiteral) expressionNode() {}
+
+func (hl *HashLiteral) TokenLiteral() string {
+	return hl.Token.Literal
+}
+
+func (hl *HashLiteral) String() string {
+	strBuilder := strings.Builder{}
+
+	strBuilder.WriteByte('{')
+
+	count := 0
+	length := len(hl.Pairs)
+	for k, v := range hl.Pairs {
+		strBuilder.WriteString(k.String())
+		strBuilder.WriteString(":")
+		strBuilder.WriteString(v.String())
+
+		if count != length-1 {
+			strBuilder.WriteString(", ")
+		}
+		count++
+	}
+
+	strBuilder.WriteByte('}')
+
+	return strBuilder.String()
+}
