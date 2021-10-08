@@ -83,6 +83,7 @@ func (s *String) Type() Type {
 }
 
 func (s *String) Inspect() string {
+	// TODO: inspect string in quotes
 	return s.Value
 }
 
