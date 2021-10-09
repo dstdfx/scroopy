@@ -8,4 +8,7 @@ unittests:
 golangci-lint:
 	@sh -c "'$(CURDIR)/scripts/golangci_lint_check.sh'"
 
-.PHONY: tests unittests golangci-lint
+build:
+	@sh -c "'$(CURDIR)/scripts/build.sh'"
+
+.PHONY: tests unittests golangci-lint build
