@@ -13,7 +13,7 @@ import (
 )
 
 // Start runs the main REPL goroutine.
-// It reads data from the given io.Reader and prints parsed AST.
+// It reads data from the given io.Reader, parses and evaluates it.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
