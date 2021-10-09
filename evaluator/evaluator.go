@@ -9,6 +9,15 @@ import (
 )
 
 var buildInFuncs = map[string]*object.BuildIn{
+	"print": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return nil
+		},
+	},
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
 			lenArgs := len(args)
