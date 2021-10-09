@@ -10,6 +10,7 @@ import (
 )
 
 // Variables that are injected in build time.
+//nolint
 var (
 	buildGitCommit string
 	buildGitTag    string
