@@ -16,13 +16,13 @@ type Node interface {
 // Statement describes AST statement e.x: variable and etc.
 type Statement interface {
 	Node
-	statementNode() // TODO: fixme
+	statementNode()
 }
 
 // Expression describes AST expression that produces a value.
 type Expression interface {
 	Node
-	expressionNode() // TODO: fixme
+	expressionNode()
 }
 
 // Root represents a root node of program's AST.
