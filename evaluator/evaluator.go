@@ -18,6 +18,8 @@ var buildInFuncs = map[string]*object.BuildIn{
 			return nil
 		},
 	},
+	// TODO: support len for hashmaps
+	// TODO: add set/delete funcs for hashmaps
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
 			lenArgs := len(args)
