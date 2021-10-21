@@ -286,8 +286,7 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 		return evalIntegerInfixExpression(op, left, right)
 	case left.Type() == object.StringObj && right.Type() == object.StringObj:
 		return evalStringInfixExpression(op, left, right)
-	// TODO: get rid of duplicated code
-	case op == "==":
+	case op == "==" || op == "!=":
 		// boolean [infix op] integer
 		if left.Type() == object.IntegerObj && right.Type() == object.BooleanObj {
 			return evalIntegerBooleanInfixExpression(op, left, right)
@@ -298,19 +297,14 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 			return evalIntegerBooleanInfixExpression(op, right, left)
 		}
 
-		return boolToBooleanObject(left == right)
-	case op == "!=":
-		// boolean [infix op] integer
-		if left.Type() == object.IntegerObj && right.Type() == object.BooleanObj {
-			return evalIntegerBooleanInfixExpression(op, left, right)
+		var boolean bool
+		if op == "==" {
+			boolean = left == right
+		} else {
+			boolean = left != right
 		}
 
-		// integer [infix op] boolean
-		if left.Type() == object.BooleanObj && right.Type() == object.IntegerObj {
-			return evalIntegerBooleanInfixExpression(op, right, left)
-		}
-
-		return boolToBooleanObject(left != right)
+		return boolToBooleanObject(boolean)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s", left.Type(), op, right.Type())
 	default:
