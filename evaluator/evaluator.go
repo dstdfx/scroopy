@@ -65,7 +65,7 @@ var buildInFuncs = map[string]*object.BuildIn{
 			}
 
 			if args[0].Type() != object.ArrayObj {
-				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `last` must be ARRAY, got %s", args[0].Type())
 			}
 
 			arrayObj := args[0].(*object.Array)
@@ -85,7 +85,7 @@ var buildInFuncs = map[string]*object.BuildIn{
 			}
 
 			if args[0].Type() != object.ArrayObj {
-				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `rest` must be ARRAY, got %s", args[0].Type())
 			}
 
 			arrayObj := args[0].(*object.Array)
@@ -108,7 +108,7 @@ var buildInFuncs = map[string]*object.BuildIn{
 			}
 
 			if args[0].Type() != object.ArrayObj {
-				return newError("argument to `first` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
 			}
 
 			arrayObj := args[0].(*object.Array)
