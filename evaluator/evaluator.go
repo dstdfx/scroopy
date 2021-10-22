@@ -18,7 +18,7 @@ var buildInFuncs = map[string]*object.BuildIn{
 			return nil
 		},
 	},
-	// TODO: add set/delete funcs for hashmaps
+	// TODO: add set func for hashmaps
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
 			lenArgs := len(args)
@@ -118,6 +118,28 @@ var buildInFuncs = map[string]*object.BuildIn{
 			newArray[arrayLength] = args[1]
 
 			return &object.Array{Elements: newArray}
+		},
+	},
+	"delete": {
+		Fn: func(args ...object.Object) object.Object {
+			lenArgs := len(args)
+			if lenArgs != 2 {
+				return newError("wrong number of arguments. got=%d, want=2", lenArgs)
+			}
+
+			if args[0].Type() != object.HashObj {
+				return newError("argument to `delete` must be HASHMAP, got %s", args[0].Type())
+			}
+
+			hashable, ok := args[1].(object.Hashable)
+			if !ok {
+				return newError("second argument to `delete` must be HASHABLE, got %s", args[1].Type())
+			}
+
+			hmObj := args[0].(*object.HashMap)
+			delete(hmObj.Pairs, hashable.HashKey())
+
+			return hmObj
 		},
 	},
 }

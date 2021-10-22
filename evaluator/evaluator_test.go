@@ -388,6 +388,28 @@ func TestBuiltinFunctions(t *testing.T) {
 				},
 			},
 		},
+		{
+			`delete({"key0": 0, "key1": 1, "key2": 2}, "key1")`,
+			&object.HashMap{
+				ObjType: object.HashObj,
+				Pairs: map[object.HashKey]object.HashPair{
+					(&object.String{Value: "key0"}).HashKey(): {
+						Key:   &object.String{Value: "key0"},
+						Value: &object.Integer{Value: 0},
+					},
+					(&object.String{Value: "key2"}).HashKey(): {
+						Key:   &object.String{Value: "key2"},
+						Value: &object.Integer{Value: 2},
+					},
+				},
+			},
+		},
+		{
+			`delete({}, "key1")`,
+			&object.HashMap{
+				ObjType: object.HashObj,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -405,6 +427,24 @@ func TestBuiltinFunctions(t *testing.T) {
 
 			if errObj.Message != expected {
 				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
+			}
+		case *object.HashMap:
+			evaluatedHm := evaluated.(*object.HashMap)
+			if len(evaluatedHm.Pairs) != len(expected.Pairs) {
+				t.Errorf("expected hashmaps length to be equal, expected=%+v, got=%+v", expected, evaluatedHm)
+			}
+
+			for k, v := range expected.Pairs {
+				got, ok := evaluatedHm.Pairs[k]
+				if !ok {
+					t.Errorf("expected %+v hashkey to be present in evaluated map", k)
+				}
+
+				if got.Value.Inspect() != v.Value.Inspect() {
+					t.Errorf("expected values to be equal, expected=%+v, got=%+v",
+						v.Value.Inspect(),
+						got.Value.Inspect())
+				}
 			}
 		}
 	}
