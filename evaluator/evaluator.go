@@ -18,7 +18,6 @@ var buildInFuncs = map[string]*object.BuildIn{
 			return nil
 		},
 	},
-	// TODO: support len for hashmaps
 	// TODO: add set/delete funcs for hashmaps
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
@@ -27,11 +26,14 @@ var buildInFuncs = map[string]*object.BuildIn{
 				return newError("wrong number of arguments. got=%d, want=1", lenArgs)
 			}
 
+			// TODO: add an interface for objects that support len funcs
 			switch arg := args[0].(type) {
 			case *object.String:
 				return &object.Integer{Value: int64(len(arg.Value))}
 			case *object.Array:
 				return &object.Integer{Value: int64(len(arg.Elements))}
+			case *object.HashMap:
+				return &object.Integer{Value: int64(len(arg.Pairs))}
 			default:
 				return newError("argument to `len` not supported, got %s", args[0].Type())
 			}

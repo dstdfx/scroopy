@@ -339,6 +339,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len(1)`, "argument to `len` not supported, got INTEGER"},
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
 		{`len([1,2,3,4,5])`, 5},
+		{`len({"key0": 1, "key1": [1,2,3], "key2": "scroop!"})`, 3},
 		{`first([1,2,3,4,5])`, 1},
 		{`last([1,2,3,4,5])`, 5},
 		{`first([1])`, 1},
