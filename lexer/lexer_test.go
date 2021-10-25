@@ -229,3 +229,34 @@ func TestLexer_NextToken_WithIllegalTokens(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkLexer(b *testing.B) {
+	input := `let five = 5;
+let ten = 10;
+let add = fn(x, y) {
+	x + y;
+};
+let result = add(five, ten);
+
+if (5 < result) {
+       return true;
+} else {
+       return false;
+}
+"foobar"
+"foo bar"
+[1,2];
+{"foo": "bar"}
+`
+
+	for i := 0; i < b.N; i++ {
+		runLexing(input)
+	}
+}
+
+func runLexing(input string) {
+	lx := lexer.New(input)
+	for t := lx.NextToken(); t.Type != token.EOF; {
+		t = lx.NextToken()
+	}
+}

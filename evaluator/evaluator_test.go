@@ -657,3 +657,36 @@ func testBooleanObject(t *testing.T, obj object.Object, expected bool) bool {
 
 	return true
 }
+
+func BenchmarkEval(b *testing.B) {
+	input := `let five = 5;
+let ten = 10;
+let add = fn(x, y) {
+	x + y;
+};
+let result = add(five, ten);
+
+if (5 < result) {
+       true;
+} else {
+       false;
+}
+"foobar"
+"foo bar"
+[1,2];
+{"foo": "bar"}
+`
+
+	for i := 0; i < b.N; i++ {
+		runEvaluation(b, input)
+	}
+}
+
+func runEvaluation(b *testing.B, input string) {
+	b.StopTimer()
+	lx := lexer.New(input)
+	p := parser.New(lx)
+	root := p.ParseProgram()
+	b.StartTimer()
+	evaluator.Eval(root, object.NewEnvironment())
+}

@@ -982,3 +982,35 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 		testFunc(value)
 	}
 }
+
+func BenchmarkParser_ParseProgram(b *testing.B) {
+	input := `let five = 5;
+let ten = 10;
+let add = fn(x, y) {
+	x + y;
+};
+let result = add(five, ten);
+
+if (5 < result) {
+       return true;
+} else {
+       return false;
+}
+"foobar"
+"foo bar"
+[1,2];
+{"foo": "bar"}
+`
+
+	for i := 0; i < b.N; i++ {
+		runParsing(b, input)
+	}
+}
+
+func runParsing(b *testing.B, input string) {
+	b.StopTimer()
+	lx := lexer.New(input)
+	b.StartTimer()
+	p := parser.New(lx)
+	p.ParseProgram()
+}
