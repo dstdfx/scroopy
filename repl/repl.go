@@ -19,7 +19,10 @@ func Start(in io.Reader, out io.Writer) {
 	env := object.NewEnvironment()
 
 	for {
-		fmt.Print(">> ")
+		_, err := io.WriteString(out, ">> ")
+		if err != nil {
+			handleIOError(err)
+		}
 		scanned := scanner.Scan()
 		if !scanned {
 			return
@@ -40,7 +43,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		_, err := io.WriteString(out, evaluated.Inspect()+"\n")
+		_, err = io.WriteString(out, evaluated.Inspect()+"\n")
 		if err != nil {
 			handleIOError(err)
 		}
